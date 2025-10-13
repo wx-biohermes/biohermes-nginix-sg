@@ -1,0 +1,128 @@
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+# Default server configuration
+#
+server {
+        listen en.biohermes.com:80;
+        server_name en.biohermes.com;
+        root /var/www/html/cms-en;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+		client_max_body_size       10m;
+	        client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+server {
+        listen hengshan.biohermes.com:80;
+        server_name hengshan.biohermes.com;
+        root /var/www/hengshanv20/public;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+server {
+        listen hengshan.biohermes.com:8080;
+        server_name hengshan.biohermes.com;
+        root /var/www/msi;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+server {
+        listen hengshan.biohermes.com:443;
+        server_name hengshan.biohermes.com;
+        root /var/www/hengshanv20/public;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+
+	ssl on; 
+    	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4; 
+    	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; 
+    	ssl_certificate /home/webdev/key_dir/1_hengshan.biohermes.com_bundle.crt;  
+    	ssl_certificate_key /home/webdev/key_dir/2_hengshan.biohermes.com.key; 
+}
+
+server {
+        #listen 221.228.109.146:80 default_server;
+        listen www.biohermes.com:80 default_server;
+        #listen www.biohermes.com:80;
+        server_name www.biohermes.com www.biohermes.cn;
+        root /var/www/html/cms-cn;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+		client_max_body_size       10m;
+                client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+

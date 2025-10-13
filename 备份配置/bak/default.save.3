@@ -1,0 +1,159 @@
+an7an7an7an7an7an7an7`n7an7an7an7an7an7an7an7an7an7an7an7an7an7an7an7an7an7an7am6am6am6am6am6al6al6al6al6al6al6al6al5al5al5al5al5`l5al5al5ak5ak5ak5ak5ak5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5`k5# 你应该查看以下网址以深入了解Nginx配置文件，以充分发挥Nginx的功能。
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# 通常情况下，你会想要将此文件移到其他地方，并从一个干净的文件开始，但保留这个文件作为参考。或者在 sites-enabled 中禁用它。
+#
+# 请参阅 /usr/share/doc/nginx-doc/examples/ 以获取更详细的示例。
+##
+
+# 默认服务器配置
+#
+
+
+server {
+        listen 80;
+        server_name en.biohermes.com;
+        root /var/www/html/cms-en;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+		client_max_body_size       10m;
+	        client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+server {
+        listen 80;
+        server_name www.biohermes.cn;
+        root /var/www/BiohermesCH;
+        index index.php index.html index.htm;
+
+        location / {
+                #try_files $uri $uri/ /index.php?$query_string;
+                try_files $uri $uri/ =404;
+		client_max_body_size       10m;
+                client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+server {
+        listen 80;
+        server_name biohermes.cn;
+        root /var/www/BiohermesCH;
+        index index.php index.html index.htm;
+	charset utf-8;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+		client_max_body_size       10m;
+                client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+
+server {                                                                                                                                                       
+        listen 80 default_server;                                                                                                                              
+        server_name www.biohermes.com;
+        root /var/www/BioHermes;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+                client_max_body_size       10m;
+                client_body_buffer_size    128k;
+        }
+}
+
+server {                                                                                                                                                       
+        listen 8080;                                                                                                                              
+	listen       [::]:8080;
+        server_name www.biohermes.com;
+        root /var/www/BiohermesV2/public;
+	index index.php index.html index.htm;
+
+        location / {
+              index index.php index.html index.htm;
+#		try_files $uri $uri/ /index.php?$query_string;
+                client_max_body_size       10m;
+                client_body_buffer_size    128k;
+
+ 	   }   
+
+
+	location ~ \.php$ {
+         # if the file is not there show a error : mynonexistingpage.php -> 404
+         try_files $uri =404;
+
+         # pass to the php-fpm server
+         fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+         fastcgi_read_timeout 300;
+         # also for fastcgi try index.php
+         fastcgi_index index.php;
+         # some tweaking
+         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+         fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+         fastcgi_buffer_size 128k;
+         fastcgi_buffers 256 16k;
+         fastcgi_busy_buffers_size 256k;
+         fastcgi_temp_file_write_size 256k;
+         include fastcgi_params;
+        }
+        location ~.*\.(js|css)?$ {
+            expires -1;
+        }
+}
+
+
+server {
+        listen 80;
+        server_name test.biohermes.cn;
+        root /var/www/BiohermesCH;
+        index index.php index.html index.htm;
+
+        location / {
+                try_files $uri $uri/ /index.php?$query_string;
+		client_max_body_size       10m;
+                client_body_buffer_size    128k;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php8.0-fpm.sock;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+        }
+}
+
+

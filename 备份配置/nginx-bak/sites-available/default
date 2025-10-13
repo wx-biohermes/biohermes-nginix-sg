@@ -1,0 +1,19 @@
+##
+# 你应该查看以下网址以深入了解Nginx配置文件，以充分发挥Nginx的功能。
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# 通常情况下，你会想要将此文件移到其他地方，并从一个干净的文件开始，但保留这个文件作为参考。或者在 sites-enabled 中禁用它。
+#
+
+# Default server configuration
+#
+
+
+
+
+
+
+
+
