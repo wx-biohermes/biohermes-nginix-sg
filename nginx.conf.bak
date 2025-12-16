@@ -1,0 +1,148 @@
+# 定义运行 Nginx 进程的用户
+user www-data;
+
+# 设定工作进程的数量为 auto
+worker_processes auto;
+
+# 明确 Nginx 进程的 PID 文件存储路径
+pid /run/nginx.pid;
+
+# 设置每个工作进程的最大打开文件数量为 65535
+worker_rlimit_nofile 65535;
+
+# 模块加载区
+
+events {
+    # 每个工作进程可处理的最大并发连接数设定为 65535
+    worker_connections 65535;
+
+    # 允许工作进程尽可能多地接收新连接
+    multi_accept on;
+
+    # 使用 epoll 模型处理网络事件
+    use epoll;
+}
+
+http {
+    ##
+    # 基本设置
+    ##
+    # 首页文件
+    index index.php index.html index.htm;
+
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
+    add_header 'Access-Control-Allow-Headers' 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+
+    # 隐藏 X-Powered-By 信息
+    proxy_hide_header X-Powered-By;
+
+    # 隐藏 Server 信息
+    proxy_hide_header Server;
+
+    # 启用高效的文件传输模式，提升性能
+    sendfile on;
+
+    # 启用 TCP 数据包的聚合发送，提高传输效率
+    tcp_nopush on;
+
+    # 禁用 Nagle 算法，减少数据传输延迟
+    tcp_nodelay on;
+
+    # 保持连接的超时时间设置为 600 秒
+    keepalive_timeout 6000;
+
+    # 类型哈希表的最大大小设定为 2048
+    types_hash_max_size 2048;
+
+    # 客户端请求体的超时时间设置为 120 秒
+    client_body_timeout 120s;
+
+    # 客户端请求头的超时时间设置为 120 秒
+    client_header_timeout 120s;
+
+    # 客户端最大请求体大小限制为 100 兆
+    client_max_body_size 100m;
+
+    # 关闭服务器的版本等相关信息输出
+    server_tokens off;
+
+    # 开启重置超时连接的功能
+    reset_timedout_connection on;
+
+    # 服务器名称哈希桶大小
+    server_names_hash_bucket_size 128;
+
+    # 重定向中不包含服务器名称（未启用）
+    # server_name_in_redirect off;
+
+    # 包含 /etc/nginx/mime.types 配置文件
+    include /etc/nginx/mime.types;
+
+    # 设定默认的文件类型为应用程序/八位字节流
+    default_type application/octet-stream;
+
+    ##
+    # SSL 设置
+    ##
+
+    # 支持的 SSL 协议版本
+    ssl_protocols TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+
+    # 优先使用服务器选择的加密算法
+    ssl_prefer_server_ciphers on;
+
+    # 使用较安全的通用加密套件
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # 设置 SSL 会话缓存为共享模式，缓存大小为 10 分钟，可提高 SSL 连接的性能。
+    ssl_session_cache shared:SSL:10m;
+
+    # 设置 SSL 会话超时时间为 10 分钟，超时后将重新建立 SSL 连接。
+    ssl_session_timeout 10m;
+
+    # 添加 HTTP 响应头 Strict-Transport-Security，指示浏览器在接下来的一年内（31536000 秒）强制使用 HTTPS 连接，提高安全性。
+    add_header Strict-Transport-Security "max-age=31536000";
+
+    ##
+    # 日志设置
+    ##
+
+    # 访问日志的存储路径，并记录详细的访问信息
+    access_log /var/log/nginx/access.log;
+
+    # 错误日志的存储路径，并记录详细的错误信息
+    error_log /var/log/nginx/error.log debug;
+
+    ##
+    # Gzip 压缩设置
+    ##
+
+    # 开启 Gzip 压缩功能
+    gzip on;
+
+    # 开启响应头中的 Vary: Accept-Encoding，以便缓存服务器能够根据客户端是否支持 gzip 压缩来缓存不同的版本。
+    gzip_vary on;
+
+    # 设置对任何代理请求都启用 gzip 压缩，包括通过反向代理等方式的请求。
+    gzip_proxied any;
+
+    # 设置 gzip 压缩级别为 5，压缩级别越高压缩率越高，但压缩时间也会增加。
+    gzip_comp_level 5;
+
+    # 设置用于存储待压缩内容的缓冲区大小为 16 个，每个 8k。
+    gzip_buffers 16 8k;
+
+    # 设置只有在 HTTP/1.1 协议下才启用 gzip 压缩。
+    gzip_http_version 1.1;
+
+    # 设置对指定的 MIME 类型进行 gzip 压缩
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/jpeg image/png image/gif audio/mpeg audio/wav;
+
+    ##
+    # 虚拟主机配置
+    ##
+
+    # 包含 目录下的所有.conf 文件
+    include /etc/nginx/sites-enabled/*.conf;
+}
